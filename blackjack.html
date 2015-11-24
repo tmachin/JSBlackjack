@@ -15,7 +15,7 @@
         <input type="button" value="Deal Cards" id="deal" />
         <div id="infobox">
             <div id="gameinfo">
-            <p>HI THERE</p>
+            <p>Have fun!</p>
             </div>
             <input type="button" value="Play again" id="playagain" />
         </div>
@@ -31,32 +31,32 @@
         </ul>
     </aside>
     <footer>
-        <h5>Thomas Machin 2015</h5>
+        <h5>Thomas Machin &copy;2015</h5>
     </footer>
 </body>
 <script>
 // Thomas Machin - comp 1911 - Blackjack
-// Nov 16 2015
+// Nov 24 2015
 // version 1
 
-var timer; //timer for when the dealer plays
-var gameOver = false; // if the game has ended - prevents running dealer functions once the game is over
+var timer; //timer for delay when the dealer plays
+var gameOver = false;
+
 //FUNCTIONS
 
 //Card Deck creation
 function createDeck(deckAmt){
 	console.log("Creating " + deckAmt + " deck(s)");
 	var cards = [],
-	    suits = ['spades','clubs','hearts','diamonds'];
+	    suits = ['spades','clubs','hearts','diamonds'],
+        cardsInSuit = 13;
 
 	for (n = 0; n < deckAmt; n++){
-		var cardsInSuit = 13,
-		    cardSuits = 4;
 
 		for (s = 0; s < suits.length; s++){ //create cards for each suit
 			currentSuit = suits[s];
 
-			for (i= 1; i <= cardsInSuit  ; i++){ //create 13 cards 1 to king
+			for (i= 1; i <= cardsInSuit  ; i++){ //create 13 cards, ace to king
 				var type = 'number',
 					suit = currentSuit,
 					value = i;
@@ -79,12 +79,12 @@ function createDeck(deckAmt){
 				cards.push([value,suit,type]);
 			}
 		}
-
 	}
 	return cards;
 
 }
 
+//logs each card in the deck to the console
 function listDeck(deck){
 	if (deck.length < 1 ){
 		console.log("No deck created");
@@ -107,7 +107,6 @@ function shuffle(array) { // Shuffle function from stack overflow http://stackov
         index = Math.floor(Math.random() * counter);
         // Decrease counter by 1
         counter--;
-
         // And swap the last element with it
         temp = array[counter];
         array[counter] = array[index];
@@ -116,13 +115,16 @@ function shuffle(array) { // Shuffle function from stack overflow http://stackov
     return array;
 }
 
+//sets up game. Deals cards to player and dealer. Sets inital button visibility.
 function startGame(){
     gameOver = false;
     console.log("New Game beginning.");
     playerHand = dealHand(deck, playerHand, 2);
     dealerHand = dealHand(deck, dealerHand, 2);
+    dealerHandHidden = dealerHand.slice(0); //duplicate dealer hand used to display version with hidden card
+
     updateHand(playerHand, playerHandString, playerTotalDisplay);
-    updateHand(dealerHand, dealerHandString, dealerTotalDisplay);
+    updateHandPartial(dealerHandHidden, dealerHandString, dealerTotalDisplay);
 
     btnDeal.style.visibility = 'hidden';
     btnHit.style.visibility = 'visible';
@@ -143,6 +145,7 @@ function dealHand(deck, hand, amt){
     }
         return hand;
 }
+
 //re-shuffle(re-create) deck if not enough cards remain to deal hand
 function reShuffleDeck(action){
     console.log('Not enough cards left in deck : reshuffling deck');
@@ -150,7 +153,8 @@ function reShuffleDeck(action){
     shuffle(deck);
     return deck;
 }
-//updates the visual/text display of the hand
+
+//update the visual/text display of the hand
 function updateHand(hand, handstring, handtotal) {
     handstring.innerHTML = "";
     handtotal.innerHTML = "";
@@ -175,16 +179,51 @@ function updateHand(hand, handstring, handtotal) {
         } else {
             value = hand[i][2];
         }
-        // if (handstring.id === "dealerhand" && i === 1){
-        //     handstring.innerHTML += "<div class='card'> ? of ? </div> "
-        // } else {
-
-            //handstring.innerHTML += "<div class='card'> <span class='" + hand[i][1] + "'>" + hand[i][2] + suitIcon + "</span><div class='cardinside'>" + "<img src='card_" + hand[i][1] + "_" + hand[i][2] + ".png' alt='Card image' " + "</div></div> " ;
-            handstring.innerHTML += "<div class='card'> <span class='" + hand[i][1] + "'>" + value +"<br/>"+ suitIcon + "</span><span class='" + hand[i][1] + " upsidedown" + "'>" + value +"<br/>"+ suitIcon  + "</span></div> " ;
-
-        //}
+        //append the card html
+        handstring.innerHTML += "<div class='card'> <span class='" + hand[i][1] + "'>" + value +"<br/>"+ suitIcon + "</span><span class='" + hand[i][1] + " upsidedown" + "'>" + value +"<br/>"+ suitIcon  + "</span></div> ";
     }
     handtotal.innerHTML += "Total: " + handTotal(hand);
+
+}
+
+//Function for updating the display of the dealers hand. Obscures one card, and part of total
+function updateHandPartial(hand, handstring, handtotal) {
+    handstring.innerHTML = "";
+    handtotal.innerHTML = "";
+    console.log("Updating partial hand display for " + handstring.id);
+
+    var suitIcons = ["&spades;","&hearts;","&clubs;","&diams;"],
+        value;
+
+    for (i = 0; i < hand.length; i++){
+
+        //choose the Icon based on the card's suit
+        if (hand[i][1] == "spades"){
+            suitIcon = suitIcons[0];
+        } else if (hand[i][1] == "hearts") {
+            suitIcon = suitIcons[1];
+        } else if (hand[i][1] == "clubs") {
+            suitIcon = suitIcons[2];
+        } else if (hand[i][1] == "diamonds"){
+            suitIcon = suitIcons[3];
+        }
+        //shorten name of queens, Jacks and Kings to display a single character
+        if (hand[i][2].length > 1 && hand[i][2] != 10){
+            value = hand[i][2].substring(0,1).toUpperCase();
+        } else {
+            value = hand[i][2];
+        }
+
+        if (i === 0){
+             handstring.innerHTML += "<div class='card back'></div> ";
+        } else {
+            handstring.innerHTML += "<div class='card'> <span class='" + hand[i][1] + "'>" + value +"<br/>"+ suitIcon + "</span><span class='" + hand[i][1] + " upsidedown" + "'>" + value +"<br/>"+ suitIcon  + "</span></div> " ;
+        }
+    }
+    console.log()
+    hand.shift();
+    handtotal.innerHTML += "Total: ? + " + handTotal(hand);
+
 
 }
 
@@ -215,7 +254,7 @@ function hit(deck, playerHand, amt){
     if (handTotal(playerHand) > 21){
         btnHit.style.visibility = "hidden";
         btnStand.style.visibility = "hidden";
-        console.log("Player has busted");
+        console.log("Player has gone bust");
         gameOver = true;
         window.setTimeout(checkWinner,1200);
     }
@@ -228,7 +267,6 @@ function stand(deck, playerHand, dealerHand){
         dealerTotal = handTotal(dealerHand);
 
     if (!gameOver){
-
         console.log("Game is not over, so dealer may want cards" )
         if (playerTotal > 21 || dealerTotal > 21){ //don't ask for more cards if player or dealer has already lost
             dealerStand = true;
@@ -248,7 +286,6 @@ function stand(deck, playerHand, dealerHand){
 
 
         //if the dealer stands, check who wins, else run this again with a delay
-        //there may be a bug where it will check the winner after a new game starts
 
         if (dealerStand){
             console.log("Dealer is not getting more cards" )
@@ -263,7 +300,7 @@ function stand(deck, playerHand, dealerHand){
                 console.log("Dealer is pausing before next card" )
                 timer = window.setTimeout(stand,1100, deck, playerHand, dealerHand);
             } else {
-                console.log("Dealer has busted");
+                console.log("Dealer has gone bust");
                 gameOver = true;
                 window.setTimeout(checkWinner,1200);
             }
@@ -271,7 +308,6 @@ function stand(deck, playerHand, dealerHand){
     } else {
         console.log("Error: Game Already ending - no need to give dealer more cards.");
     }
-
 }
 
 
@@ -279,7 +315,6 @@ function clearCards(handstring){
     handstring.innerHTML = " ";
 }
 function checkWinner(){
-    clearTimeout(timer); // incase the timer hasn't stopped
     if (gameOver){
         playerTotal = handTotal(playerHand);
         dealerTotal = handTotal(dealerHand);
@@ -291,9 +326,16 @@ function checkWinner(){
             msg.innerHTML = "<h2>Player has busted</h2><h1>Dealer Wins!</h1>";
 
         } else if (playerTotal === 21 && dealerTotal !== 21){
-            console.log("Final: Player has blackjack");
             gameStatusDiv.className = 'win';
-            msg.innerHTML = "<h1>Blackjack!</h1><h2>You win!</h2>";
+
+            if (playerHand.length == 2){
+                console.log("Final: Player has blackjack");
+                msg.innerHTML = "<h1>Blackjack!</h1><h2>You win!</h2>";
+            } else {
+                console.log("Final: Player has 21");
+                msg.innerHTML = "<h1>21!</h1><h2>You win!</h2>";
+            }
+
 
         } else if (dealerTotal > 21) {
             console.log("Final: Dealer has busted");
@@ -317,9 +359,8 @@ function checkWinner(){
         gameStatusDiv.style.display = "block";
         gameOver = false;
     } else {
-            console.log("Error: Winner checked before game ended, or after a new game began");
+        console.log("Error: Winner checked before game ended, or after a new game began");
     }
-
 }
 
 //PROGRAM
@@ -329,7 +370,6 @@ var playerHand = [],
 	dealerHand = [];
 
 shuffle(deck);
-//listDeck(deck);
 
 var btnDeal = document.getElementById('deal'),
     btnHit = document.getElementById('hit'),
@@ -356,7 +396,9 @@ btnStand.addEventListener('click', function (){
     console.log("Player Stands");
     btnHit.style.visibility = "hidden";
     btnStand.style.visibility = "hidden";
-    stand(deck, playerHand, dealerHand);
+    //update dealer hand using all cards in hand, to reveal hidden card
+    updateHand(dealerHand, dealerHandString, dealerTotalDisplay);
+    window.setTimeout(stand,800,deck, playerHand, dealerHand);
 });
 
 btnNextGame.addEventListener('click', function (){
