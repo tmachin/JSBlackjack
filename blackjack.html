@@ -3,116 +3,16 @@
 <head>
     <title>Blackjack by Thomas Machin</title>
     <link href='https://fonts.googleapis.com/css?family=Nunito:700' rel='stylesheet' type='text/css'>
-    <style>
-    body {
-        background-color: #0e3300;
-        font-size: 20px;
-        font-family: 'Nunito',sans-serif;
-        padding: 0;
-        margin: 0;
-    }
-    h1 {
-        margin:0.2em;
-        text-align: center;
-    }
-    h1#title{
-        font-size: 3.1em;
-        font-weight: bold;
-        color:gold;
-        margin-top: 0px;
-    }
-    input {
-        border-radius: 5px;
-        padding: 1em;
-        font-size:1em;
-        font-weight: bold;
-    }
-    #hit, #stand{
-        visibility: hidden;
-    }
-
-    #main {
-        background-color: rgb(8, 91, 9);
-        width: 70%;
-        padding: 2em;
-        margin:0 auto;
-        position: relative;
-    }
-    .hand {
-        border: 4px double gold;
-        background-color: rgb(0, 64, 1);
-        padding: 0.2em;
-        margin: 0.2em auto;
-        border-radius: 15px;
-        min-height: 10em;
-        width:90%;
-        max-width: 800px;
-    }
-    .card {
-        background-color: #fff;
-        border-radius: 5px;
-        border-left: 1px solid rgba(56,56,53,0.8);
-        width:5em;
-        padding: 0.2em;
-        height: 8em;
-        margin:0.5em 0.5em 0.5em -2em;
-        float:left;
-        position:relative;
-        -webkit-box-shadow: 2px 2px 1px 0px rgba(56,56,53,0.8);
-        -moz-box-shadow: 2px 2px 1px 0px rgba(56,56,53,0.8);
-        box-shadow: 2px 2px 1px 0px rgba(56,56,53,0.8);
-    }
-    .card:first-child{
-        margin:0.5em;
-    }
-    .card span {
-        position: absolute;
-        /*left:0;
-        top:0;*/
-        text-align: center;
-        font-size: 1.5em;
-        padding:0.2em 0.1em;
-        line-height: 0.7em;
-    }
-    .clubs, .spades {
-        color:black;
-    }
-    .hearts, .diamonds{
-        color:red;
-    }
-
-    .upsidedown {
-        transform: rotate(180deg);
-        right: 0.2em;
-        bottom: 0.2em;
-    }
-    .cardinside img{
-
-    }
-    #infobox{
-        text-align: center;
-        position: fixed;
-        width:33%;
-        height:20%;
-        background-color: rgb(29, 130, 195);
-        top: 0;
-        left: 33%;
-        padding: 2em;
-        margin: 0;
-        display: none;
-    }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="main">
         <h1 id="title">Blackjack</h1>
-
-
-        <div><h2>Dealer's Hand:</h2><div id="dealerhand" class="hand"></div></div>
-        <div><h2>Player's hand:</h2><div id="playerhand" class="hand"></div></div>
-        <input type="button" value="hit" id="hit" />
-        <input type="button" value="stand" id="stand" />
-        <input type="button" value="deal hand" id="deal" />
+        <div><h2>Dealer's Hand:</h2><span id="dealertotal">Total : 0</span><div id="dealerhand" class="hand"></div></div>
+        <div><h2>Player's hand:</h2><span id="playertotal">Total : 0</span><div id="playerhand" class="hand"></div></div>
+        <input type="button" value="Hit" id="hit" />
+        <input type="button" value="Stand" id="stand" />
+        <input type="button" value="Deal Cards" id="deal" />
         <div id="infobox">
             <div id="gameinfo">
             <p>HI THERE</p>
@@ -120,7 +20,19 @@
             <input type="button" value="Play again" id="playagain" />
         </div>
     </div>
-
+    <aside id="rules">
+        <h3>Rules</h3>
+        <ul>
+            <li>Get a higher total than the dealer without going over 21</li>
+            <li>Kings, Queens and Jacks Are worth 10 </li>
+            <li>Aces can be worth 1 or 11</li>
+            <li>Choose Hit to get another card from the deck</li>
+            <li>Once you choose Stand the dealer will play.</li>
+        </ul>
+    </aside>
+    <footer>
+        <h5>Thomas Machin 2015</h5>
+    </footer>
 </body>
 <script>
 // Thomas Machin - comp 1911 - Blackjack
@@ -209,8 +121,8 @@ function startGame(){
     console.log("New Game beginning.");
     playerHand = dealHand(deck, playerHand, 2);
     dealerHand = dealHand(deck, dealerHand, 2);
-    updateHand(playerHand, playerHandString);
-    updateHand(dealerHand, dealerHandString);
+    updateHand(playerHand, playerHandString, playerTotalDisplay);
+    updateHand(dealerHand, dealerHandString, dealerTotalDisplay);
 
     btnDeal.style.visibility = 'hidden';
     btnHit.style.visibility = 'visible';
@@ -239,8 +151,9 @@ function reShuffleDeck(action){
     return deck;
 }
 //updates the visual/text display of the hand
-function updateHand(hand,handstring) {
+function updateHand(hand, handstring, handtotal) {
     handstring.innerHTML = "";
+    handtotal.innerHTML = "";
     console.log("Updating hand display for " + handstring.id);
     var suitIcons = ["&spades;","&hearts;","&clubs;","&diams;"];
     var value;
@@ -271,7 +184,7 @@ function updateHand(hand,handstring) {
 
         //}
     }
-    handstring.innerHTML += "Total: " + handTotal(hand);
+    handtotal.innerHTML += "Total: " + handTotal(hand);
 
 }
 
@@ -300,6 +213,8 @@ function hit(deck, playerHand, amt){
     }
     playerHand.push(deck.pop());
     if (handTotal(playerHand) > 21){
+        btnHit.style.visibility = "hidden";
+        btnStand.style.visibility = "hidden";
         console.log("Player has busted");
         gameOver = true;
         window.setTimeout(checkWinner,1200);
@@ -338,11 +253,11 @@ function stand(deck, playerHand, dealerHand){
         if (dealerStand){
             console.log("Dealer is not getting more cards" )
             gameOver = true;
-            updateHand(dealerHand, dealerHandString);
+            updateHand(dealerHand, dealerHandString, dealerTotalDisplay);
             clearTimeout(timer);
             window.setTimeout(checkWinner,1200);
         } else {
-            updateHand(dealerHand, dealerHandString);
+            updateHand(dealerHand, dealerHandString, dealerTotalDisplay);
             clearTimeout(timer);
             if (handTotal(dealerHand) <= 21){
                 console.log("Dealer is pausing before next card" )
@@ -361,7 +276,7 @@ function stand(deck, playerHand, dealerHand){
 
 
 function clearCards(handstring){
-    handstring.innerHTML = "";
+    handstring.innerHTML = " ";
 }
 function checkWinner(){
     clearTimeout(timer); // incase the timer hasn't stopped
@@ -372,25 +287,31 @@ function checkWinner(){
 
         if (playerTotal > 21){
             console.log("Final: Player has busted");
+            gameStatusDiv.className = 'lose';
             msg.innerHTML = "<h2>Player has busted</h2><h1>Dealer Wins!</h1>";
 
         } else if (playerTotal === 21 && dealerTotal !== 21){
             console.log("Final: Player has blackjack");
+            gameStatusDiv.className = 'win';
             msg.innerHTML = "<h1>Blackjack!</h1><h2>You win!</h2>";
 
         } else if (dealerTotal > 21) {
             console.log("Final: Dealer has busted");
+            gameStatusDiv.className = 'win';
             msg.innerHTML = "<h2>Dealer has busted</h2><h1>You Win!</h1>";
 
         } else if (playerTotal > dealerTotal){
             console.log("Final: Player Wins!");
+            gameStatusDiv.className = 'win';
             msg.innerHTML = "<h1>Player Wins!</h1>";
 
         } else if (playerTotal === dealerTotal){
             console.log("Final: A Push!");
+            gameStatusDiv.className = 'tie';
             msg.innerHTML = "<h1>A Push! It's a tie.</h1>";
         } else {
             console.log("Final: Dealer Wins!");
+            gameStatusDiv.className = 'lose';
             msg.innerHTML = "<h1>Dealer Wins!</h1>";
         }
         gameStatusDiv.style.display = "block";
@@ -415,7 +336,9 @@ var btnDeal = document.getElementById('deal'),
     btnStand = document.getElementById('stand'),
     btnNextGame = document.getElementById('playagain'),
     playerHandString = document.getElementById('playerhand'),
+    playerTotalDisplay = document.getElementById('playertotal'),
     dealerHandString = document.getElementById('dealerhand'),
+    dealerTotalDisplay = document.getElementById('dealertotal'),
     gameStatusDiv = document.getElementById('infobox');
 
 //Buttons for player actions
@@ -426,7 +349,7 @@ btnDeal.addEventListener('click', function (){
 btnHit.addEventListener('click', function (){
     console.log("Player Hits");
     playerHand = hit(deck, playerHand, 1);
-    updateHand(playerHand, playerHandString);
+    updateHand(playerHand, playerHandString, playerTotalDisplay);
 });
 
 btnStand.addEventListener('click', function (){
