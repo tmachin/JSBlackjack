@@ -1,7 +1,7 @@
 
 // Thomas Machin - JS Blackjack
-// Dec 11 2015
-// version 1.01
+// April 6 2015
+// version 1.02
 
 var timer; //timer for delay when the dealer plays
 var gameOver = false;
@@ -91,6 +91,8 @@ function startGame(){
     updateHandPartial(dealerHandHidden, dealerHandString, dealerTotalDisplay);
 
     btnDeal.style.visibility = 'hidden';
+    // btnIncreaseBet.style.visibility = 'hidden';
+    // btnDecreaseBet.style.visibility = 'hidden';
     btnHit.style.visibility = 'visible';
     btnStand.style.visibility = 'visible';
 }
@@ -248,7 +250,6 @@ function stand(deck, playerHand, dealerHand){
                 dealerStand = true;
         }
 
-
         //if the dealer stands, check who wins, else run this again with a delay
         if (dealerStand){
             console.log("Dealer is not getting more cards" )
@@ -278,6 +279,7 @@ function clearCards(handstring){
     handstring.innerHTML = " ";
 }
 function checkWinner(){
+    var winLossAmt = 0;
     if (gameOver){
         playerTotal = handTotal(playerHand);
         dealerTotal = handTotal(dealerHand);
@@ -286,40 +288,52 @@ function checkWinner(){
         if (playerTotal > 21){
             console.log("Final: Player has busted");
             gameStatusDiv.className = 'lose';
-            msg.innerHTML = "<h2>Player has busted</h2><h1>Dealer Wins!</h1>";
+            msg.innerHTML = "<h2>Player has busted</h2><h1>Dealer Wins!</h1><h3>You lose $" + currentBet +"</h3>";
+            winLossAmt = completeBet("lose",currentBet);
 
         } else if (playerTotal === 21 && dealerTotal !== 21){
             gameStatusDiv.className = 'win';
 
             if (playerHand.length == 2){
                 console.log("Final: Player has blackjack");
-                msg.innerHTML = "<h1>Blackjack!</h1><h2>You win!</h2>";
+                winLossAmt = completeBet("blackjack",currentBet);
+                msg.innerHTML = "<h1>Blackjack!</h1><h2>You win!</h2><h3>You win $" + winLossAmt +"</h3>";
             } else {
                 console.log("Final: Player has 21");
-                msg.innerHTML = "<h1>21!</h1><h2>You win!</h2>";
+                winLossAmt = completeBet("win",currentBet);
+                msg.innerHTML = "<h1>21!</h1><h2>You win!</h2><h3>You win $" + winLossAmt +"</h3>";
             }
-
 
         } else if (dealerTotal > 21) {
             console.log("Final: Dealer has busted");
+            winLossAmt = completeBet("win",currentBet);
             gameStatusDiv.className = 'win';
-            msg.innerHTML = "<h2>Dealer has busted</h2><h1>You Win!</h1>";
+            msg.innerHTML = "<h2>Dealer has busted</h2><h1>You Win!</h1><h3>You win $" + winLossAmt +"</h3>";
 
         } else if (playerTotal > dealerTotal){
             console.log("Final: Player Wins!");
+            winLossAmt = completeBet("win",currentBet);
             gameStatusDiv.className = 'win';
-            msg.innerHTML = "<h1>Player Wins!</h1>";
+            msg.innerHTML = "<h1>Player Wins!</h1><h3>You win $" + winLossAmt +"</h3>";
 
         } else if (playerTotal === dealerTotal){
             console.log("Final: A Push!");
+            winLossAmt = completeBet("tie",currentBet);
             gameStatusDiv.className = 'tie';
             msg.innerHTML = "<h1>A Push! It's a tie.</h1>";
+
         } else {
             console.log("Final: Dealer Wins!");
             gameStatusDiv.className = 'lose';
-            msg.innerHTML = "<h1>Dealer Wins!</h1>";
+            winLossAmt = completeBet("lose",currentBet);
+            msg.innerHTML = "<h1>Dealer Wins!</h1><h3>You lose $" + currentBet +"</h3>";
         }
+        
         gameStatusDiv.style.display = "block";
+        playerCash += winLossAmt;
+        playerBetDisplay.innerHTML = minimumBet;
+        currentBet = 0;
+        playerCashDisplay.innerHTML = playerCash;
         gameOver = false;
     } else {
         console.log("Error: Winner checked before game ended, or after a new game began");
@@ -335,11 +349,35 @@ function hideDiv (div) {
     }
 }
 
+function completeBet(state, betAmt){
+    //returns the amount won or lost
+    switch(state){
+        case "win":
+            Amt = betAmt * 2;
+            break;
+        case"lose":
+            Amt = 0;
+            break;
+        case"tie":
+            Amt = betAmt;
+            break;
+        case "blackjack":
+            Amt = betAmt * 2.5;
+            break;
+    }
+    return Amt;
+}
+
 //PROGRAM
 var deckNum = 1;
 var deck = createDeck(deckNum);
 var playerHand = [],
 	dealerHand = [];
+
+
+var minimumBet = 5,
+    currentBet = minimumBet;
+var playerCash = 100 - minimumBet;
 
 shuffle(deck);
 
@@ -347,16 +385,21 @@ var btnDeal = document.getElementById('deal'),
     btnHit = document.getElementById('hit'),
     btnStand = document.getElementById('stand'),
     btnNextGame = document.getElementById('playagain'),
-    playerHandString = document.getElementById('playerhand'),
-    playerTotalDisplay = document.getElementById('playertotal'),
+    btnIncreaseBet = document.getElementById('btnIncreaseBet'),
+    btnDecreaseBet = document.getElementById('btnDecreaseBet'),
     dealerHandString = document.getElementById('dealerhand'),
     dealerTotalDisplay = document.getElementById('dealertotal'),
+    playerHandString = document.getElementById('playerhand'),
+    playerTotalDisplay = document.getElementById('playertotal'),
+    playerCashDisplay = document.getElementById('playerCash'),
+    playerBetDisplay = document.getElementById('currentBet'),
     gameStatusDiv = document.getElementById('infobox'),
     aboutToggle = document.getElementById('aboutbtn'),
     aboutClose = document.getElementById('aboutclose'),
     ruleClose = document.getElementById('rulesclose'),
     ruleToggle = document.getElementById('rulesbtn');
 
+playerCashDisplay.innerHTML = playerCash;
 //Buttons for player actions
 btnDeal.addEventListener('click', function (){
     startGame();
@@ -384,6 +427,43 @@ btnNextGame.addEventListener('click', function (){
     clearCards(dealerHandString);
     window.setTimeout(startGame,800);
 });
+
+btnIncreaseBet.addEventListener('click', function (){
+    if (playerCash > minimumBet){
+        currentBet += minimumBet;
+        playerCash -= minimumBet;
+        btnDecreaseBet.disabled = false;
+    }
+
+    playerBetDisplay.innerHTML = currentBet;
+    playerCashDisplay.innerHTML = playerCash;
+    console.log("Current Bet is now:" + currentBet);
+    console.log("Player Cash:" + playerCash);
+    if (playerCash <= minimumBet){
+        console.log("Max bet reached");
+        btnIncreaseBet.disabled = true;
+    }
+
+});
+
+btnDecreaseBet.addEventListener('click', function (){
+    if (currentBet > minimumBet ){
+        currentBet -= minimumBet;
+        playerCash += minimumBet;
+        btnIncreaseBet.disabled = false;
+    }
+
+    playerBetDisplay.innerHTML = currentBet;
+    playerCashDisplay.innerHTML = playerCash;
+    console.log("Current Bet is now:" + currentBet);
+    console.log("Player Cash:" + playerCash);
+    if (currentBet <= minimumBet){
+        console.log("Min bet reached");
+        btnDecreaseBet.disabled = true;
+    }
+});
+
+
 
 ruleToggle.addEventListener('click', function (){
     hideDiv('rules');
