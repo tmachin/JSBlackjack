@@ -8,6 +8,7 @@ Simple Blackjack game in Javascript
 <head>
     <title>Blackjack by Thomas Machin</title>
     <link href='https://fonts.googleapis.com/css?family=Nunito:700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style.css">
 
 </head>
@@ -15,7 +16,7 @@ Simple Blackjack game in Javascript
 
     <div id="main">
         <header>
-            <h1 id="title">Blackjack</h1>
+            <h1 id="title"><span class="spades">&spades;</span><span class="diamonds">&diams;</span>Blackjack<span class="hearts">&hearts;</span><span class="clubs">&clubs;</span></h1>
             <h5>Thomas Machin &copy;2016</h5>
             <nav>
                 <ul>
@@ -25,26 +26,42 @@ Simple Blackjack game in Javascript
             </nav>
         </header>
         <div id="playArea">
-            <div><h2>Dealer's Hand:</h2><span id="dealertotal">Total : 0</span><div id="dealerhand" class="hand"></div></div>
-            <div><h2>Player's hand:</h2><span id="playertotal">Total : 0</span><div id="playerhand" class="hand"></div></div>
-            <div id="betting">
-                <h2>Bets:</h2>
-                Minimum Bet: $50
-                <h3>Current Bet:$<span id="currentBet">50</span>
-                <input type="button" value="+" class="btnBet" id="btnIncreaseBet"/>
-                <input type="button" value="-" class="btnBet" id="btnDecreaseBet"/>
-                </h3>
-                Current Cash: $<span id="playerCash">100</span>
+
+            <div id="hands">
+                <div><h2>DEALER</h2><span class="handtotal" id="dealertotal">Total : 0</span><div id="dealerhand" class="hand"></div></div>
+
+                <div class="playerwager">Current Bet:$<span class="currentBet">50</span></div>
+                <div><div id="playerhand" class="hand"></div><span class="handtotal" id="playertotal">Total : 0</span><h2>PLAYER</h2></div>
+                <div id="cardactions">
+                    <input type="button" class="btn" value="Hit" id="hit" />
+                    <input type="button" class="btn" value="Stand" id="stand" />
+                </div>
+                <div id="playerbank">
+                    Current Cash: $<span class="playerCash">100</span>
+
+                </div>
             </div>
-            <input type="button" value="Hit" id="hit" />
-            <input type="button" value="Stand" id="stand" />
-            <input type="button" value="Deal Cards" id="deal" />
+
+            <div id="betting">
+                <h2>Place Your Bet</h2>
+                Minimum Bet: $50
+                <h3>Current Bet:$<span class="currentBet">50</span>
+                <input type="button" value="+" class="btn btnBet" id="btnIncreaseBet"/>
+                <input type="button" value="-" class="btn btnBet" id="btnDecreaseBet"/>
+                </h3>
+                Current Cash: $<span class="playerCash">100</span>
+                <br/>
+                <input type="button" class="btn" value="Deal Cards" id="deal" />
+            </div>
+
+
+
 
             <div id="infobox">
                 <div id="gameinfo">
                 <p>Have fun!</p>
                 </div>
-                <input type="button" value="Play again" id="playagain" />
+                <input type="button" value="Play again" class="btn" id="playagain" />
             </div>
         </div>
     </div>
@@ -57,14 +74,14 @@ Simple Blackjack game in Javascript
             <li>Choose Hit to get another card from the deck</li>
             <li>Once you choose Stand the dealer will play.</li>
         </ul>
-        <a href='#' id="rulesclose">X</a>
+        <a href='#' class="btn" id="rulesclose">X</a>
     </aside>
     <aside id="about">
         <h3>About</h3>
         <p>A simple version of Blackjack made in JS</p>
         <h4>by <a href="http://thomasmachin.com">Thomas Machin</a> &copy;2015</h4>
         <a href="https://github.com/tmachin/JSBlackjack">See the source on github</a>
-        <a href='#' id="aboutclose">X</a>
+        <a href='#'class="btn" id="aboutclose">X</a>
     </aside>
 
 </body>

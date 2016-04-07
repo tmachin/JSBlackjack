@@ -1,7 +1,9 @@
 
 // Thomas Machin - JS Blackjack
-// April 6 2015
-// version 1.02
+// thomasmachin.com
+// Github: https://github.com/tmachin/JSBlackjack
+// April 7 2015
+// version 1.1
 
 var timer; //timer for delay when the dealer plays
 var gameOver = false;
@@ -80,6 +82,7 @@ function shuffle(array) { // Shuffle function from stack overflow http://stackov
 
 //sets up game. Deals cards to player and dealer. Sets inital button visibility.
 function startGame(){
+    betWindowDiv.style.display = 'none';
     gameOver = false;
     console.log("New Game beginning.");
     playerHand = dealHand(deck, playerHand, 2);
@@ -104,7 +107,7 @@ function resetGame(){
     btnStand.style.visibility = 'hidden';
     dealerTotalDisplay.innerHTML = "Total: " +'0';
     playerTotalDisplay.innerHTML = "Total: " +'0';
-
+    betWindowDiv.style.display = 'block';
     btnDeal.disabled = true;
     btnIncreaseBet.disabled = false;
     btnDecreaseBet.disabled = true;
@@ -291,7 +294,7 @@ function stand(deck, playerHand, dealerHand){
             } else {
                 console.log("Dealer has gone bust");
                 gameOver = true;
-                window.setTimeout(checkWinner,1200);
+                window.setTimeout(checkWinner,1300);
             }
         }
     } else {
@@ -355,10 +358,13 @@ function checkWinner(){
         }
 
         playerCash += winLossAmt;
-        playerBetDisplay.innerHTML = minimumBet;
+        playerBetDisplay[0].innerHTML = minimumBet;
+        playerBetDisplay[1].innerHTML = minimumBet;
         currentBet = 0;
-        playerBetDisplay.innerHTML = currentBet;
-        playerCashDisplay.innerHTML = playerCash;
+        playerBetDisplay[0].innerHTML = currentBet;
+        playerBetDisplay[1].innerHTML = currentBet;
+        playerCashDisplay[0].innerHTML = playerCash;
+        playerCashDisplay[1].innerHTML = playerCash;
 
         if (playerCash <= 0){
             msg.innerHTML += "<h1>You are bankrupt! Game Over!</h1>";
@@ -422,15 +428,18 @@ var btnDeal = document.getElementById('deal'),
     dealerTotalDisplay = document.getElementById('dealertotal'),
     playerHandString = document.getElementById('playerhand'),
     playerTotalDisplay = document.getElementById('playertotal'),
-    playerCashDisplay = document.getElementById('playerCash'),
-    playerBetDisplay = document.getElementById('currentBet'),
+    playerCashDisplay = document.getElementsByClassName('playerCash'),
+    playerBetDisplay = document.getElementsByClassName('currentBet'),
+    betWindowDiv = document.getElementById('betting'),
     gameStatusDiv = document.getElementById('infobox'),
     aboutToggle = document.getElementById('aboutbtn'),
     aboutClose = document.getElementById('aboutclose'),
     ruleClose = document.getElementById('rulesclose'),
     ruleToggle = document.getElementById('rulesbtn');
 
-playerCashDisplay.innerHTML = playerCash;
+console.log(playerCashDisplay);
+playerCashDisplay[0].innerHTML = playerCash;
+playerCashDisplay[1].innerHTML = playerCash;
 
 //Buttons for player actions
 btnDeal.addEventListener('click', function (){
@@ -460,8 +469,10 @@ btnNextGame.addEventListener('click', function (){
     if (playerCash <= 0){
         playerCash = minimumBet * 19;
         currentBet = minimumBet;
-        playerBetDisplay.innerHTML = currentBet;
-        playerCashDisplay.innerHTML = playerCash;
+        playerBetDisplay[0].innerHTML = currentBet;
+        playerBetDisplay[1].innerHTML = currentBet;
+        playerCashDisplay[0].innerHTML = playerCash;
+        playerCashDisplay[1].innerHTML = playerCash;
 
     }
     window.setTimeout(resetGame,400);
@@ -474,8 +485,11 @@ btnIncreaseBet.addEventListener('click', function (){
         btnDecreaseBet.disabled = false;
     }
 
-    playerBetDisplay.innerHTML = currentBet;
-    playerCashDisplay.innerHTML = playerCash;
+    playerBetDisplay[0].innerHTML = currentBet;
+    playerBetDisplay[1].innerHTML = currentBet;
+
+    playerCashDisplay[0].innerHTML = playerCash;
+    playerCashDisplay[1].innerHTML = playerCash;
     console.log("Current Bet is now:" + currentBet);
     console.log("Player Cash:" + playerCash);
     if (playerCash < minimumBet){
@@ -495,8 +509,10 @@ btnDecreaseBet.addEventListener('click', function (){
         btnIncreaseBet.disabled = false;
     }
 
-    playerBetDisplay.innerHTML = currentBet;
-    playerCashDisplay.innerHTML = playerCash;
+    playerBetDisplay[0].innerHTML = currentBet;
+    playerBetDisplay[1].innerHTML = currentBet;
+    playerCashDisplay[0].innerHTML = playerCash;
+    playerCashDisplay[1].innerHTML = playerCash;
     console.log("Current Bet is now:" + currentBet);
     console.log("Player Cash:" + playerCash);
     if (currentBet <= minimumBet){
