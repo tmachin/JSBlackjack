@@ -45,7 +45,6 @@ function createDeck(deckAmt){
 		}
 	}
 	return cards;
-
 }
 
 //logs each card in the deck to the console
@@ -91,10 +90,24 @@ function startGame(){
     updateHandPartial(dealerHandHidden, dealerHandString, dealerTotalDisplay);
 
     btnDeal.style.visibility = 'hidden';
-    // btnIncreaseBet.style.visibility = 'hidden';
-    // btnDecreaseBet.style.visibility = 'hidden';
+    btnIncreaseBet.style.visibility = 'hidden';
+    btnDecreaseBet.style.visibility = 'hidden';
     btnHit.style.visibility = 'visible';
     btnStand.style.visibility = 'visible';
+}
+function resetGame(){
+    gameOver = false;
+    btnDeal.style.visibility = 'visible';
+    btnIncreaseBet.style.visibility = 'visible';
+    btnDecreaseBet.style.visibility = 'visible';
+    btnHit.style.visibility = 'hidden';
+    btnStand.style.visibility = 'hidden';
+    dealerTotalDisplay.innerHTML = "Total: " +'0';
+    playerTotalDisplay.innerHTML = "Total: " +'0';
+
+    btnDeal.disabled = true;
+    btnIncreaseBet.disabled = false;
+    btnDecreaseBet.disabled = true;
 }
 //Deal initial hand
 function dealHand(deck, hand, amt){
@@ -130,15 +143,21 @@ function updateHand(hand, handstring, handtotal) {
     for (i = 0; i < hand.length; i++){
 
         //choose the Icon based on the card's suit
-        if (hand[i][1] == "spades"){
-            suitIcon = suitIcons[0];
-        } else if (hand[i][1] == "hearts") {
-            suitIcon = suitIcons[1];
-        } else if (hand[i][1] == "clubs") {
-            suitIcon = suitIcons[2];
-        } else if (hand[i][1] == "diamonds"){
-            suitIcon = suitIcons[3];
+        switch (hand[i][1]){
+            case "spades":
+                suitIcon = suitIcons[0];
+                break;
+            case "hearts":
+                suitIcon = suitIcons[1];
+                break;
+            case "clubs":
+                suitIcon = suitIcons[2];
+                break;
+            case "diamonds":
+                suitIcon = suitIcons[3];
+                break;
         }
+
         //shorten name of queens, Jacks and Kings to display a single character
         if (hand[i][2].length > 1 && hand[i][2] != 10){
             value = hand[i][2].substring(0,1).toUpperCase();
@@ -164,15 +183,21 @@ function updateHandPartial(hand, handstring, handtotal) {
     for (i = 0; i < hand.length; i++){
 
         //choose the Icon based on the card's suit
-        if (hand[i][1] == "spades"){
-            suitIcon = suitIcons[0];
-        } else if (hand[i][1] == "hearts") {
-            suitIcon = suitIcons[1];
-        } else if (hand[i][1] == "clubs") {
-            suitIcon = suitIcons[2];
-        } else if (hand[i][1] == "diamonds"){
-            suitIcon = suitIcons[3];
+        switch (hand[i][1]){
+            case "spades":
+                suitIcon = suitIcons[0];
+                break;
+            case "hearts":
+                suitIcon = suitIcons[1];
+                break;
+            case "clubs":
+                suitIcon = suitIcons[2];
+                break;
+            case "diamonds":
+                suitIcon = suitIcons[3];
+                break;
         }
+
         //shorten name of queens, Jacks and Kings to display a single character
         if (hand[i][2].length > 1 && hand[i][2] != 10){
             value = hand[i][2].substring(0,1).toUpperCase();
@@ -328,12 +353,18 @@ function checkWinner(){
             winLossAmt = completeBet("lose",currentBet);
             msg.innerHTML = "<h1>Dealer Wins!</h1><h3>You lose $" + currentBet +"</h3>";
         }
-        
-        gameStatusDiv.style.display = "block";
+
         playerCash += winLossAmt;
         playerBetDisplay.innerHTML = minimumBet;
         currentBet = 0;
+        playerBetDisplay.innerHTML = currentBet;
         playerCashDisplay.innerHTML = playerCash;
+
+        if (playerCash <= 0){
+            msg.innerHTML += "<h1>You are bankrupt! Game Over!</h1>";
+            btnNextGame.value = "Try Again?";
+        }
+        gameStatusDiv.style.display = "block";
         gameOver = false;
     } else {
         console.log("Error: Winner checked before game ended, or after a new game began");
@@ -375,9 +406,9 @@ var playerHand = [],
 	dealerHand = [];
 
 
-var minimumBet = 5,
+var minimumBet = 50,
     currentBet = minimumBet;
-var playerCash = 100 - minimumBet;
+var playerCash = minimumBet * 19;
 
 shuffle(deck);
 
@@ -400,6 +431,7 @@ var btnDeal = document.getElementById('deal'),
     ruleToggle = document.getElementById('rulesbtn');
 
 playerCashDisplay.innerHTML = playerCash;
+
 //Buttons for player actions
 btnDeal.addEventListener('click', function (){
     startGame();
@@ -425,11 +457,18 @@ btnNextGame.addEventListener('click', function (){
     gameStatusDiv.style.display = "none";
     clearCards(playerHandString);
     clearCards(dealerHandString);
-    window.setTimeout(startGame,800);
+    if (playerCash <= 0){
+        playerCash = minimumBet * 19;
+        currentBet = minimumBet;
+        playerBetDisplay.innerHTML = currentBet;
+        playerCashDisplay.innerHTML = playerCash;
+
+    }
+    window.setTimeout(resetGame,400);
 });
 
 btnIncreaseBet.addEventListener('click', function (){
-    if (playerCash > minimumBet){
+    if (playerCash >= minimumBet){
         currentBet += minimumBet;
         playerCash -= minimumBet;
         btnDecreaseBet.disabled = false;
@@ -439,9 +478,12 @@ btnIncreaseBet.addEventListener('click', function (){
     playerCashDisplay.innerHTML = playerCash;
     console.log("Current Bet is now:" + currentBet);
     console.log("Player Cash:" + playerCash);
-    if (playerCash <= minimumBet){
+    if (playerCash < minimumBet){
         console.log("Max bet reached");
         btnIncreaseBet.disabled = true;
+    }
+    if (currentBet >= minimumBet){
+        btnDeal.disabled = false;
     }
 
 });

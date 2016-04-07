@@ -16,7 +16,7 @@ Simple Blackjack game in Javascript
     <div id="main">
         <header>
             <h1 id="title">Blackjack</h1>
-            <h5>Thomas Machin &copy;2015</h5>
+            <h5>Thomas Machin &copy;2016</h5>
             <nav>
                 <ul>
                     <li><a href='#' id="rulesbtn" >Rules</a></li>
@@ -24,28 +24,28 @@ Simple Blackjack game in Javascript
                 </ul>
             </nav>
         </header>
-
-
-        <div><h2>Dealer's Hand:</h2><span id="dealertotal">Total : 0</span><div id="dealerhand" class="hand"></div></div>
-        <div><h2>Player's hand:</h2><span id="playertotal">Total : 0</span><div id="playerhand" class="hand"></div></div>
-        <div id="betting">
-            <h2>Bets:</h2>
-            Minimum Bet: $5
-            <h3>Current Bet:$<span id="currentBet">5</span>
-            <input type="button" value="+" id="btnIncreaseBet"/>
-            <input type="button" value="-" id="btnDecreaseBet"/>
-            </h3>
-            Current Cash: $<span id="playerCash">100</span>
-        </div>
-        <input type="button" value="Hit" id="hit" />
-        <input type="button" value="Stand" id="stand" />
-        <input type="button" value="Deal Cards" id="deal" />
-
-        <div id="infobox">
-            <div id="gameinfo">
-            <p>Have fun!</p>
+        <div id="playArea">
+            <div><h2>Dealer's Hand:</h2><span id="dealertotal">Total : 0</span><div id="dealerhand" class="hand"></div></div>
+            <div><h2>Player's hand:</h2><span id="playertotal">Total : 0</span><div id="playerhand" class="hand"></div></div>
+            <div id="betting">
+                <h2>Bets:</h2>
+                Minimum Bet: $50
+                <h3>Current Bet:$<span id="currentBet">50</span>
+                <input type="button" value="+" class="btnBet" id="btnIncreaseBet"/>
+                <input type="button" value="-" class="btnBet" id="btnDecreaseBet"/>
+                </h3>
+                Current Cash: $<span id="playerCash">100</span>
             </div>
-            <input type="button" value="Play again" id="playagain" />
+            <input type="button" value="Hit" id="hit" />
+            <input type="button" value="Stand" id="stand" />
+            <input type="button" value="Deal Cards" id="deal" />
+
+            <div id="infobox">
+                <div id="gameinfo">
+                <p>Have fun!</p>
+                </div>
+                <input type="button" value="Play again" id="playagain" />
+            </div>
         </div>
     </div>
     <aside id="rules">
