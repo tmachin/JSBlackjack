@@ -295,12 +295,13 @@ input {
 @media screen and (max-width: 800px) {
     body {
         font-size: 16px;
+        background-color: #0e3300;
     }
     .card span{
         line-height:0.9em;
     }
     #main {
-        height:100%;
+        min-height:100%;
     }
 
 }
